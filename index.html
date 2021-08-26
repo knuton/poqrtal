@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>poqrtal</title>
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<style>
+body, html {
+  margin: 0;
+  padding: 0;
+}
+</style>
+</head>
+<body>
+<video id="qrreader"></video>
+<script type="module">
+import QrScanner from './qr-scanner.min.js'
+QrScanner.WORKER_PATH = './qr-scanner-worker.min.js'
+
+const readerElem = document.getElementById('qrreader')
+
+const qrScanner = new QrScanner(readerElem, result => {
+  console.log("Detected", result)
+
+  // Only act on HTTP(S) URLs
+  if (/^https?:/.test(result)) {
+    qrScanner.stop()
+    // Simply set location, framing might be blocked
+    document.location = result
+  }
+})
+// Scan for both dark on light and light on dark QR codes
+qrScanner.setInversionMode('both')
+// Try to request the camera facing away from user
+qrScanner.setCamera('environment')
+// Begin scanning
+qrScanner.start()
+</script>
+</body>
+</html>
